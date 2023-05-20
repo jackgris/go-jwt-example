@@ -20,6 +20,19 @@ func main() {
 	app.Get("/", accessible)
 
 	// JWT Middleware
+	// You have to know that the Config object we are passing to the middleware says this:
+	// Context key to store user information from the token into context.
+	// Optional. Default: "user".
+	// ContextKey string
+	// And in our middelware we have the following code:
+	// if err == nil && token.Valid {
+	// 	// Store user information from token into context.
+	// 	c.Locals(cfg.ContextKey, token)
+	// 	return cfg.SuccessHandler(c)
+	// }
+	// For that reason, we can use this code:
+	// user := c.Locals("user").(*jwt.Token)
+	// And with that, our restricted handler checks if the token has permission.
 	app.Use(jwtware.New(jwtware.Config{
 		SigningKey: []byte("secret"),
 	}))
